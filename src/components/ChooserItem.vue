@@ -1,19 +1,21 @@
 <template>
-  <li class="chooser__item">
+  <li class="chooser__item" @click="emit('select', feature)">
     <div class="chooser__item__icon-container">
       <div class="chooser__item__icon">&plus;</div>
     </div>
-    <div class="chooser__item__label">{{ label }}</div>
+    <div class="chooser__item__label">{{ feature.label }}</div>
   </li>
 </template>
 
 <script setup>
 defineProps({
-  label: {
-    type: String,
+  feature: {
+    type: Object,
     required: true,
   },
-});
+})
+
+const emit = defineEmits(['select'])
 </script>
 
 <style scoped>

@@ -4,19 +4,23 @@
       <div class="viewer__frame">
         <img
           class="hero-image"
-          src="./assets/images/hero_start.jpg"
+          :src="viewerImage"
           alt="Closed MacBook Neo"
         />
       </div>
-      <Chooser />
+      <Chooser :features="features" @select="activeFeature = $event" />
     </div>
   </main>
 </template>
 
 <script setup>
 import gsap from "gsap";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import Chooser from "./components/Chooser.vue";
+import { features, hero } from "./data/features.js";
+
+const activeFeature = ref(null)
+const viewerImage = computed(() => activeFeature.value?.imageStart ?? hero.imageStart)
 
 const refViewer = ref(null);
 

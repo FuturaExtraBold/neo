@@ -1,18 +1,25 @@
 <template>
   <ul class="chooser">
-    <ChooserItem label="Colors" />
-    <ChooserItem label="Durable design" />
-    <ChooserItem label="Display" />
-    <ChooserItem label="Keyboard and trackpad" />
-    <ChooserItem label="Touch ID" />
-    <ChooserItem label="Camera" />
-    <ChooserItem label="Mics and speakers" />
-    <ChooserItem label="Connectivity" />
+    <ChooserItem
+      v-for="feature in features"
+      :key="feature.id"
+      :feature="feature"
+      @select="emit('select', $event)"
+    />
   </ul>
 </template>
 
 <script setup>
-import ChooserItem from "./ChooserItem.vue";
+import ChooserItem from "./ChooserItem.vue"
+
+defineProps({
+  features: {
+    type: Array,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['select'])
 </script>
 
 <style scoped>
