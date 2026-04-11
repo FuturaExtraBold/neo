@@ -4,22 +4,27 @@
       v-for="feature in features"
       :key="feature.id"
       :feature="feature"
+      :is-active="activeId === feature.id"
       @select="emit('select', $event)"
     />
   </ul>
 </template>
 
 <script setup>
-import ChooserItem from "./ChooserItem.vue"
+import ChooserItem from "./ChooserItem.vue";
 
 defineProps({
   features: {
     type: Array,
     required: true,
   },
-})
+  activeId: {
+    type: String,
+    default: null,
+  },
+});
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(["select"]);
 </script>
 
 <style scoped>

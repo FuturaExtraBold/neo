@@ -1,9 +1,21 @@
 <template>
-  <li class="chooser__item" @click="emit('select', feature)">
-    <div class="chooser__item__icon-container">
-      <div class="chooser__item__icon">&plus;</div>
-    </div>
-    <div class="chooser__item__label">{{ feature.label }}</div>
+  <li
+    class="chooser__item"
+    :class="{ 'chooser__item--active': isActive }"
+    @click="emit('select', feature)"
+  >
+    <template v-if="!isActive">
+      <div class="chooser__item__icon-container">
+        <div class="chooser__item__icon">&plus;</div>
+      </div>
+      <div class="chooser__item__label">{{ feature.label }}</div>
+    </template>
+
+    <div
+      v-else
+      class="chooser__item__description"
+      v-html="feature.description"
+    />
   </li>
 </template>
 
@@ -13,9 +25,13 @@ defineProps({
     type: Object,
     required: true,
   },
-})
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(["select"]);
 </script>
 
 <style scoped>
@@ -57,5 +73,20 @@ const emit = defineEmits(['select'])
 
 .chooser__item__label {
   line-height: 1;
+}
+
+/* --- active / expanded state --- */
+.chooser__item--active {
+  height: auto;
+  width: 420px;
+  align-items: flex-start;
+  padding: 30px;
+}
+
+.chooser__item__description {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 25px;
+  letter-spacing: -0.374px;
 }
 </style>

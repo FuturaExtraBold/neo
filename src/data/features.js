@@ -29,11 +29,13 @@ export const hero = {
 };
 
 // Chooser feature list
+// descriptions are raw HTML strings — render with v-html, never as text nodes
 export const features = [
   {
     id: "colors",
     label: "Colors",
-    description: "",
+    description:
+      "<strong>Colors.</strong> The most colorful MacBook lineup ever. Choose from four stunning colors with color-coordinated keyboards. Shown in Blush.",
     imageStart: imgColorsSilver, // first variant is the default view
     imageEnd: null,
     hasVideo: false,
@@ -48,7 +50,8 @@ export const features = [
   {
     id: "durable-design",
     label: "Durable design",
-    description: "",
+    description:
+      "<strong>Durable design.</strong> MacBook Neo is made with a durable recycled aluminum enclosure that helps it reach 60 percent recycled content by weight, the most ever in any Apple product.",
     imageStart: imgDurable,
     imageEnd: null,
     hasVideo: false,
@@ -58,7 +61,8 @@ export const features = [
   {
     id: "display",
     label: "Display",
-    description: "",
+    description:
+      "<strong>Display.</strong> With outstanding resolution and 500 nits of brightness, the 13-inch Liquid Retina display brings photos, websites, and videos to life with refreshing clarity and vivid colors.",
     imageStart: imgDisplay,
     imageEnd: null,
     hasVideo: false,
@@ -68,7 +72,8 @@ export const features = [
   {
     id: "keyboard-and-trackpad",
     label: "Keyboard and trackpad",
-    description: "",
+    description:
+      "<strong>Keyboard and trackpad.</strong> The Magic Keyboard delivers a precise and comfortable typing experience. And the large Multi-Touch trackpad lets you tap, pinch, swipe, and click anywhere.",
     imageStart: imgKeyboardStart,
     imageEnd: imgKeyboardEnd,
     hasVideo: true,
@@ -78,7 +83,8 @@ export const features = [
   {
     id: "touch-id",
     label: "Touch ID",
-    description: "",
+    description:
+      "<strong>Touch ID.</strong> The model with Touch ID lets you easily unlock your MacBook Neo, sign in to websites and apps, and download apps with the touch of your finger.",
     imageStart: imgTouchID,
     imageEnd: null,
     hasVideo: false,
@@ -88,7 +94,8 @@ export const features = [
   {
     id: "camera",
     label: "Camera",
-    description: "",
+    description:
+      "<strong>Camera.</strong> The 1080p FaceTime HD camera gives you a clear and crisp appearance on video calls.",
     imageStart: imgCamera,
     imageEnd: null,
     hasVideo: false,
@@ -98,7 +105,8 @@ export const features = [
   {
     id: "mics-and-speakers",
     label: "Mics and speakers",
-    description: "",
+    description:
+      "<strong>Mics and speakers.</strong> Two side-firing speakers deliver immersive sound, and dual microphones isolate and enhance your voice for crystal clarity.",
     imageStart: imgAudioStart,
     imageEnd: imgAudioEnd,
     hasVideo: true,
@@ -108,7 +116,8 @@ export const features = [
   {
     id: "connectivity",
     label: "Connectivity",
-    description: "",
+    description:
+      "<strong>Connectivity.</strong> Two USB-C ports and a headphone jack let you connect a variety of accessories, transfer your data, and charge MacBook Neo.",
     imageStart: imgConnectivity,
     imageEnd: null,
     hasVideo: false,
