@@ -9,14 +9,21 @@
       >
         <div class="viewer__frame" :key="currentItem.id ?? 'hero'">
           <div class="viewer__media">
-            <video
-              v-if="showVideo"
-              :src="currentItem.video"
-              autoplay
-              muted
-              playsinline
-              @ended="onVideoEnded"
-            />
+            <template v-if="currentItem.hasVideo">
+              <video
+                :src="currentItem.video"
+                autoplay
+                muted
+                playsinline
+                @ended="onVideoEnded"
+              />
+              <img
+                v-if="currentItem.imageEnd"
+                :src="currentItem.imageEnd"
+                class="viewer__video-end"
+                :class="{ 'viewer__video-end--visible': videoEnded }"
+              />
+            </template>
             <template v-else-if="currentItem.variants">
               <img
                 v-for="v in currentItem.variants"
@@ -59,12 +66,7 @@ const activeVariant = ref(null);
 const videoEnded = ref(false);
 
 const currentItem = computed(() => activeFeature.value ?? hero);
-const showVideo = computed(
-  () => !!currentItem.value.hasVideo && !videoEnded.value,
-);
-const viewerImage = computed(() =>
-  videoEnded.value ? currentItem.value.imageEnd : currentItem.value.imageStart
-);
+const viewerImage = computed(() => currentItem.value.imageStart);
 
 function onClose() {
   activeFeature.value = null;
@@ -83,15 +85,7 @@ function onSelectVariant(variant) {
 }
 
 function onVideoEnded() {
-  const item = currentItem.value;
-  if (!item.imageEnd) {
-    videoEnded.value = true;
-    return;
-  }
-  const img = new Image();
-  img.onload = () => { videoEnded.value = true; };
-  img.onerror = () => { videoEnded.value = true; };
-  img.src = item.imageEnd;
+  videoEnded.value = true;
 }
 
 // Reset video state and preload imageEnd whenever the active item changes
@@ -122,7 +116,9 @@ function onEnter(el, done) {
   gsap
     .timeline({ onComplete: done })
     .to(el, { xPercent: 0, duration: 1.5, ease: "expo.out" }, 0)
-    .to(media ?? el, { scale: 1, opacity: 1, duration: 1, ease: "expo.out" }, 0);
+    .to(media ?? el, { scale: 1, opacity: 1, duration: 1, ease: "expo.out" }, 0)
+    .set(el, { clearProps: "transform" })
+    .set(media ?? el, { clearProps: "transform,opacity" });
 }
 
 function onLeave(el, done) {
@@ -168,11 +164,13 @@ onMounted(() => {
   position: relative;
   border-radius: var(--viewer-border-radius);
   overflow: hidden;
+  clip-path: inset(0 round var(--viewer-border-radius));
   background-color: var(--viewer-bg);
   width: 1440px;
   height: 760px;
   display: flex;
   align-items: center;
+  transform: translateZ(0);
 }
 
 .viewer__frame {
@@ -197,6 +195,19 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.viewer__video-end {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.viewer__video-end--visible {
+  opacity: 1;
 }
 
 .viewer__variant-img {
