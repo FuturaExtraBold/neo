@@ -93,7 +93,7 @@ watch(
           paddingLeft: OPEN_P,
           duration: 0.3,
           ease: "power3.out",
-        }
+        },
       );
 
       // Height: back.out(2) — bounce feel on vertical axis only
@@ -106,14 +106,14 @@ watch(
           ease: "back.out(2)",
           onComplete: () =>
             gsap.to(descEl.value, { autoAlpha: 1, duration: 0.1 }),
-        }
+        },
       );
     } else {
       // Snap description invisible
       gsap.set(descEl.value, { autoAlpha: 0 });
 
       // Read current open dims so fromTo has explicit FROM — same as opening approach
-      const fromWidth  = itemEl.value.offsetWidth;
+      const fromWidth = itemEl.value.offsetWidth;
       const fromHeight = itemEl.value.offsetHeight;
 
       // Width + padding: explicit fromTo, power3.out — hard stop at closedWidth
@@ -134,7 +134,7 @@ watch(
           paddingLeft: CLOSED_PL,
           duration: 0.3,
           ease: "power3.out",
-        }
+        },
       );
 
       // Height: explicit fromTo, back.out(2)
@@ -151,7 +151,7 @@ watch(
             gsap.set(innerEl.value, { display: "flex", autoAlpha: 0 });
             gsap.to(innerEl.value, { autoAlpha: 1, duration: 0.1 });
           },
-        }
+        },
       );
     }
   },
