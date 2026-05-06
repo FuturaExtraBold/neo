@@ -164,7 +164,6 @@ onMounted(() => {
   position: relative;
   border-radius: var(--viewer-border-radius);
   overflow: hidden;
-  clip-path: inset(0 round var(--viewer-border-radius));
   background-color: var(--viewer-bg);
   width: 1440px;
   height: 760px;
@@ -180,6 +179,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  clip-path: inset(0 round var(--viewer-border-radius));
 }
 
 .viewer__media {
