@@ -30,6 +30,13 @@
           </div>
         </div>
       </Transition>
+      <Transition name="close-fade">
+        <button v-if="activeFeature" class="viewer__close" @click="onClose" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+            <path d="m20.1211 18 3.4395-3.4395c.5859-.5854.5859-1.5356 0-2.1211-.5859-.5859-1.5352-.5859-2.1211 0l-3.4395 3.4395-3.4395-3.4395c-.5859-.5859-1.5352-.5859-2.1211 0-.5859.5854-.5859 1.5356 0 2.1211l3.4395 3.4395-3.4395 3.4395c-.5859.5854-.5859 1.5356 0 2.1211.293.293.6768.4395 1.0605.4395s.7676-.1465 1.0605-.4395l3.4395-3.4395 3.4395 3.4395c.293.293.6768.4395 1.0605.4395s.7676-.1465 1.0605-.4395c.5859-.5854.5859-1.5356 0-2.1211l-3.4395-3.4395z"/>
+          </svg>
+        </button>
+      </Transition>
       <Chooser
         :features="features"
         :active-id="activeFeature?.id ?? null"
@@ -59,6 +66,11 @@ const viewerImage = computed(() =>
   videoEnded.value ? currentItem.value.imageEnd : currentItem.value.imageStart
 );
 
+function onClose() {
+  activeFeature.value = null;
+  activeVariant.value = null;
+}
+
 function onSelect(feature) {
   if (activeFeature.value?.id !== feature.id) {
     activeVariant.value = feature.variants?.[0] ?? null;
@@ -71,7 +83,15 @@ function onSelectVariant(variant) {
 }
 
 function onVideoEnded() {
-  videoEnded.value = true;
+  const item = currentItem.value;
+  if (!item.imageEnd) {
+    videoEnded.value = true;
+    return;
+  }
+  const img = new Image();
+  img.onload = () => { videoEnded.value = true; };
+  img.onerror = () => { videoEnded.value = true; };
+  img.src = item.imageEnd;
 }
 
 // Reset video state and preload imageEnd whenever the active item changes
@@ -97,6 +117,7 @@ function onBeforeEnter(el) {
 }
 
 function onEnter(el, done) {
+  el._enterDone = done;
   const media = el.querySelector(".viewer__media");
   gsap
     .timeline({ onComplete: done })
@@ -106,13 +127,26 @@ function onEnter(el, done) {
 
 function onLeave(el, done) {
   const media = el.querySelector(".viewer__media");
-  gsap
-    .timeline({ onComplete: done })
-    .to(el, { xPercent: -10, duration: 1, ease: "expo.out" }, 0)
-    .to(media ?? el, { scale: SCALE_SMALL, opacity: 0, duration: 0.5, ease: "expo.out" }, 0);
+  // Kill any in-flight enter animation and resolve it so Vue can clean up
+  gsap.killTweensOf([el, media]);
+  el._enterDone?.();
+  el._enterDone = null;
+  // Snap out instantly
+  gsap.set(el, { xPercent: -10 });
+  gsap.set(media ?? el, { opacity: 0 });
+  done();
 }
 
 onMounted(() => {
+  const allImages = [
+    hero.imageStart, hero.imageEnd,
+    ...features.flatMap(f => [
+      f.imageStart, f.imageEnd,
+      ...(f.variants?.map(v => v.image) ?? []),
+    ].filter(Boolean)),
+  ];
+  allImages.forEach(src => { new Image().src = src; });
+
   gsap.from(refViewer.value, {
     autoAlpha: 0,
     y: 40,
@@ -180,4 +214,33 @@ onMounted(() => {
   opacity: 1;
   z-index: 1;
 }
+
+.viewer__close {
+  position: absolute;
+  top: 23px;
+  right: 23px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 44px;
+  border: none;
+  background-color: var(--chooser-item-bg);
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.viewer__close svg {
+  width: 33px;
+  height: 33px;
+  fill: black;
+}
+
+.close-fade-enter-active,
+.close-fade-leave-active { transition: opacity 0.2s ease; }
+.close-fade-enter-from,
+.close-fade-leave-to { opacity: 0; }
 </style>
