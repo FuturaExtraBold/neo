@@ -30,7 +30,9 @@
                 :key="v.name"
                 :src="v.image"
                 class="viewer__variant-img"
-                :class="{ 'viewer__variant-img--active': v.name === activeVariant?.name }"
+                :class="{
+                  'viewer__variant-img--active': v.name === activeVariant?.name,
+                }"
               />
             </template>
             <img v-else :src="viewerImage" />
@@ -38,9 +40,16 @@
         </div>
       </Transition>
       <Transition name="close-fade">
-        <button v-if="activeFeature" class="viewer__close" @click="onClose" aria-label="Close">
+        <button
+          v-if="activeFeature"
+          class="viewer__close"
+          @click="onClose"
+          aria-label="Close"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
-            <path d="m20.1211 18 3.4395-3.4395c.5859-.5854.5859-1.5356 0-2.1211-.5859-.5859-1.5352-.5859-2.1211 0l-3.4395 3.4395-3.4395-3.4395c-.5859-.5859-1.5352-.5859-2.1211 0-.5859.5854-.5859 1.5356 0 2.1211l3.4395 3.4395-3.4395 3.4395c-.5859.5854-.5859 1.5356 0 2.1211.293.293.6768.4395 1.0605.4395s.7676-.1465 1.0605-.4395l3.4395-3.4395 3.4395 3.4395c.293.293.6768.4395 1.0605.4395s.7676-.1465 1.0605-.4395c.5859-.5854.5859-1.5356 0-2.1211l-3.4395-3.4395z"/>
+            <path
+              d="m20.1211 18 3.4395-3.4395c.5859-.5854.5859-1.5356 0-2.1211-.5859-.5859-1.5352-.5859-2.1211 0l-3.4395 3.4395-3.4395-3.4395c-.5859-.5859-1.5352-.5859-2.1211 0-.5859.5854-.5859 1.5356 0 2.1211l3.4395 3.4395-3.4395 3.4395c-.5859.5854-.5859 1.5356 0 2.1211.293.293.6768.4395 1.0605.4395s.7676-.1465 1.0605-.4395l3.4395-3.4395 3.4395 3.4395c.293.293.6768.4395 1.0605.4395s.7676-.1465 1.0605-.4395c.5859-.5854.5859-1.5356 0-2.1211l-3.4395-3.4395z"
+            />
           </svg>
         </button>
       </Transition>
@@ -106,7 +115,7 @@ const SCALE_SMALL = 1440 / 1728; // ~0.833 — matches 1440×760 at native ratio
 
 function onBeforeEnter(el) {
   const media = el.querySelector(".viewer__media");
-  gsap.set(el, { xPercent: 10 });
+  gsap.set(el, { xPercent: 0 });
   if (media) gsap.set(media, { scale: SCALE_SMALL, opacity: 0 });
 }
 
@@ -115,7 +124,7 @@ function onEnter(el, done) {
   const media = el.querySelector(".viewer__media");
   gsap
     .timeline({ onComplete: done })
-    .to(el, { xPercent: 0, duration: 1.5, ease: "expo.out" }, 0)
+    .to(el, { xPercent: 0, duration: 1, ease: "expo.out" }, 0)
     .to(media ?? el, { scale: 1, opacity: 1, duration: 1, ease: "expo.out" }, 0)
     .set(el, { clearProps: "transform" })
     .set(media ?? el, { clearProps: "transform,opacity" });
@@ -127,21 +136,27 @@ function onLeave(el, done) {
   gsap.killTweensOf([el, media]);
   el._enterDone?.();
   el._enterDone = null;
-  // Snap out instantly
-  gsap.set(el, { xPercent: -10 });
-  gsap.set(media ?? el, { opacity: 0 });
-  done();
+  gsap
+    .timeline({ onComplete: done })
+    .to(el, { xPercent: -10, duration: 1, ease: "expo.out" }, 0)
+    .to(media ?? el, { opacity: 0, duration: 1, ease: "expo.out" }, 0);
 }
 
 onMounted(() => {
   const allImages = [
-    hero.imageStart, hero.imageEnd,
-    ...features.flatMap(f => [
-      f.imageStart, f.imageEnd,
-      ...(f.variants?.map(v => v.image) ?? []),
-    ].filter(Boolean)),
+    hero.imageStart,
+    hero.imageEnd,
+    ...features.flatMap((f) =>
+      [
+        f.imageStart,
+        f.imageEnd,
+        ...(f.variants?.map((v) => v.image) ?? []),
+      ].filter(Boolean),
+    ),
   ];
-  allImages.forEach(src => { new Image().src = src; });
+  allImages.forEach((src) => {
+    new Image().src = src;
+  });
 
   gsap.from(refViewer.value, {
     autoAlpha: 0,
@@ -251,7 +266,11 @@ onMounted(() => {
 }
 
 .close-fade-enter-active,
-.close-fade-leave-active { transition: opacity 0.2s ease; }
+.close-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
 .close-fade-enter-from,
-.close-fade-leave-to { opacity: 0; }
+.close-fade-leave-to {
+  opacity: 0;
+}
 </style>
