@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Read(//Users/benhays/Code/**)",
+      "Bash(git -C /Users/benhays/Code/neo log --oneline -3)"
     ]
   }
 }
