@@ -1,3 +1,6 @@
+# Generated WebP images (built from originals by scripts/convert-to-webp.js)
+src/assets/images/*.webp
+
 # Build output
 dist
 dist-ssr

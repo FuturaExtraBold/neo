@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "convert": "node scripts/convert-to-webp.js",
+    "dev": "npm run convert && vite",
+    "build": "npm run convert && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.5",
     "sass": "^1.99.0",
+    "sharp": "^0.34.5",
     "vite": "^8.0.4"
   }
 }
