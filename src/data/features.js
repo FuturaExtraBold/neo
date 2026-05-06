@@ -35,16 +35,16 @@ export const features = [
     id: "colors",
     label: "Colors",
     description:
-      "<strong>Colors.</strong> The most colorful MacBook lineup ever. Choose from four stunning colors with color-coordinated keyboards. Shown in Blush.",
-    imageStart: imgColorsSilver, // first variant is the default view
+      "<strong>Colors.</strong> The most colorful MacBook lineup ever. Choose from four stunning colors with color-coordinated keyboards.",
+    imageStart: imgColorsSilver,
     imageEnd: null,
     hasVideo: false,
     video: null,
     variants: [
-      { name: "Silver", image: imgColorsSilver },
-      { name: "Blush", image: imgColorsBlush },
-      { name: "Citrus", image: imgColorsCitrus },
-      { name: "Indigo", image: imgColorsIndigo },
+      { name: "Silver", displayName: "Silver",      bgColor: "rgb(227, 228, 229)", image: imgColorsSilver },
+      { name: "Blush",  displayName: "Blush",       bgColor: "rgb(232, 208, 208)", image: imgColorsBlush  },
+      { name: "Citrus", displayName: "Citrus",      bgColor: "rgb(221, 220, 140)", image: imgColorsCitrus },
+      { name: "Indigo", displayName: "Indigo", bgColor: "rgb(89, 102, 128)",  image: imgColorsIndigo },
     ],
   },
   {

@@ -36,7 +36,9 @@
         :key="feature.id"
         :feature="feature"
         :is-active="activeId === feature.id"
+        :active-variant-name="activeVariantName"
         @select="emit('select', $event)"
+        @select-variant="emit('select-variant', $event)"
       />
     </ul>
   </div>
@@ -55,9 +57,13 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  activeVariantName: {
+    type: String,
+    default: null,
+  },
 });
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["select", "select-variant"]);
 
 const activeIndex = computed(() =>
   props.features.findIndex((f) => f.id === props.activeId),

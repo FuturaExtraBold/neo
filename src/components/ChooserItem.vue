@@ -14,25 +14,52 @@
     <div
       class="chooser__item__description"
       ref="descEl"
-      v-html="feature.description"
+      v-html="renderedDescription"
     />
+    <div
+      v-if="feature.variants"
+      class="chooser__item__variants"
+      ref="variantsEl"
+    >
+      <button
+        v-for="v in feature.variants"
+        :key="v.name"
+        class="chooser__item__swatch"
+        :class="{ 'chooser__item__swatch--active': v.name === activeVariantName }"
+        :style="{ backgroundColor: v.bgColor }"
+        @click.stop="emit('select-variant', v)"
+      />
+    </div>
   </li>
 </template>
 
 <script setup>
 import gsap from "gsap";
-import { onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 const props = defineProps({
   feature: { type: Object, required: true },
   isActive: { type: Boolean, default: false },
+  activeVariantName: { type: String, default: null },
 });
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["select", "select-variant"]);
 
 const itemEl = ref(null);
 const innerEl = ref(null);
 const descEl = ref(null);
+const variantsEl = ref(null);
+
+const activeVariant = computed(() =>
+  props.feature.variants?.find((v) => v.name === props.activeVariantName)
+  ?? props.feature.variants?.[0]
+  ?? null
+);
+
+const renderedDescription = computed(() => {
+  if (!props.feature.variants || !activeVariant.value) return props.feature.description;
+  return `${props.feature.description} Shown in ${activeVariant.value.displayName}.`;
+});
 
 // Must match CSS closed state
 const CLOSED_H = 56;
@@ -48,19 +75,22 @@ const OPEN_P = 30;
 let closedWidth = 0;
 
 onMounted(() => {
-  gsap.set(descEl.value, { autoAlpha: 0, display: "none" }); // hide before measuring
+  gsap.set(descEl.value, { autoAlpha: 0, display: "none" });
+  if (variantsEl.value) gsap.set(variantsEl.value, { autoAlpha: 0, display: "none" });
   closedWidth = itemEl.value.offsetWidth;
 });
 
 watch(
   () => props.isActive,
-  (active) => {
-    gsap.killTweensOf([itemEl.value, innerEl.value, descEl.value]);
+  async (active) => {
+    await nextTick(); // ensure --active class (gap:0, flex-direction:column) is in DOM before measuring
+    gsap.killTweensOf([itemEl.value, innerEl.value, descEl.value, variantsEl.value]);
 
     if (active) {
       // Remove inner from flow so it doesn't inflate the height measurement
       gsap.set(innerEl.value, { display: "none" });
       gsap.set(descEl.value, { display: "block", autoAlpha: 0 });
+      if (variantsEl.value) gsap.set(variantsEl.value, { display: "flex", autoAlpha: 0 });
 
       // Set item to open state — height:'auto' overrides the CSS 56px rule
       gsap.set(itemEl.value, {
@@ -104,13 +134,16 @@ watch(
           height: openHeight,
           duration: 0.3,
           ease: "back.out(2)",
-          onComplete: () =>
-            gsap.to(descEl.value, { autoAlpha: 1, duration: 0.1 }),
+          onComplete: () => {
+            gsap.to(descEl.value, { autoAlpha: 1, duration: 0.1 });
+            if (variantsEl.value) gsap.to(variantsEl.value, { autoAlpha: 1, duration: 0.1 });
+          },
         },
       );
     } else {
       // Snap description invisible
       gsap.set(descEl.value, { autoAlpha: 0 });
+      if (variantsEl.value) gsap.set(variantsEl.value, { autoAlpha: 0 });
 
       // Read current open dims so fromTo has explicit FROM — same as opening approach
       const fromWidth = itemEl.value.offsetWidth;
@@ -147,6 +180,7 @@ watch(
           ease: "back.out(2)",
           onComplete: () => {
             gsap.set(descEl.value, { display: "none" });
+            if (variantsEl.value) gsap.set(variantsEl.value, { display: "none" });
             gsap.set(itemEl.value, { clearProps: "all" });
             gsap.set(innerEl.value, { display: "flex", autoAlpha: 0 });
             gsap.to(innerEl.value, { autoAlpha: 1, duration: 0.1 });
@@ -180,9 +214,11 @@ watch(
   backdrop-filter: blur(20px);
 }
 
-/* GSAP owns width / height / padding — only align-items lives here */
+/* GSAP owns width / height / padding — only align-items/direction/gap live here */
 .chooser__item--active {
   align-items: flex-start;
+  flex-direction: column;
+  gap: 0;
 }
 
 .chooser__item__inner {
@@ -221,5 +257,29 @@ watch(
 .chooser__item__description :deep(strong) {
   font-family: var(--font-sans);
   font-weight: 600;
+}
+
+.chooser__item__variants {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.chooser__item__swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.chooser__item__swatch--active {
+  outline: 2px solid rgba(0, 0, 0, 0.6);
+  outline-offset: 2px;
 }
 </style>
