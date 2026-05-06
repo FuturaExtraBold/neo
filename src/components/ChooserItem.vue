@@ -25,7 +25,9 @@
         v-for="v in feature.variants"
         :key="v.name"
         class="chooser__item__swatch"
-        :class="{ 'chooser__item__swatch--active': v.name === activeVariantName }"
+        :class="{
+          'chooser__item__swatch--active': v.name === activeVariantName,
+        }"
         :style="{ backgroundColor: v.bgColor }"
         @click.stop="emit('select-variant', v)"
       />
@@ -50,14 +52,16 @@ const innerEl = ref(null);
 const descEl = ref(null);
 const variantsEl = ref(null);
 
-const activeVariant = computed(() =>
-  props.feature.variants?.find((v) => v.name === props.activeVariantName)
-  ?? props.feature.variants?.[0]
-  ?? null
+const activeVariant = computed(
+  () =>
+    props.feature.variants?.find((v) => v.name === props.activeVariantName) ??
+    props.feature.variants?.[0] ??
+    null,
 );
 
 const renderedDescription = computed(() => {
-  if (!props.feature.variants || !activeVariant.value) return props.feature.description;
+  if (!props.feature.variants || !activeVariant.value)
+    return props.feature.description;
   return `${props.feature.description} Shown in ${activeVariant.value.displayName}.`;
 });
 
@@ -76,7 +80,8 @@ let closedWidth = 0;
 
 onMounted(() => {
   gsap.set(descEl.value, { autoAlpha: 0, display: "none" });
-  if (variantsEl.value) gsap.set(variantsEl.value, { autoAlpha: 0, display: "none" });
+  if (variantsEl.value)
+    gsap.set(variantsEl.value, { autoAlpha: 0, display: "none" });
   closedWidth = itemEl.value.offsetWidth;
 });
 
@@ -84,13 +89,19 @@ watch(
   () => props.isActive,
   async (active) => {
     await nextTick(); // ensure --active class (gap:0, flex-direction:column) is in DOM before measuring
-    gsap.killTweensOf([itemEl.value, innerEl.value, descEl.value, variantsEl.value]);
+    gsap.killTweensOf([
+      itemEl.value,
+      innerEl.value,
+      descEl.value,
+      variantsEl.value,
+    ]);
 
     if (active) {
       // Remove inner from flow so it doesn't inflate the height measurement
       gsap.set(innerEl.value, { display: "none" });
       gsap.set(descEl.value, { display: "block", autoAlpha: 0 });
-      if (variantsEl.value) gsap.set(variantsEl.value, { display: "flex", autoAlpha: 0 });
+      if (variantsEl.value)
+        gsap.set(variantsEl.value, { display: "flex", autoAlpha: 0 });
 
       // Set item to open state — height:'auto' overrides the CSS 56px rule
       gsap.set(itemEl.value, {
@@ -136,7 +147,8 @@ watch(
           ease: "back.out(2)",
           onComplete: () => {
             gsap.to(descEl.value, { autoAlpha: 1, duration: 0.1 });
-            if (variantsEl.value) gsap.to(variantsEl.value, { autoAlpha: 1, duration: 0.1 });
+            if (variantsEl.value)
+              gsap.to(variantsEl.value, { autoAlpha: 1, duration: 0.1 });
           },
         },
       );
@@ -180,7 +192,8 @@ watch(
           ease: "back.out(2)",
           onComplete: () => {
             gsap.set(descEl.value, { display: "none" });
-            if (variantsEl.value) gsap.set(variantsEl.value, { display: "none" });
+            if (variantsEl.value)
+              gsap.set(variantsEl.value, { display: "none" });
             gsap.set(itemEl.value, { clearProps: "all" });
             gsap.set(innerEl.value, { display: "flex", autoAlpha: 0 });
             gsap.to(innerEl.value, { autoAlpha: 1, duration: 0.1 });

@@ -65,106 +65,23 @@
 </template>
 
 <script setup>
-import gsap from "gsap";
-import { computed, onMounted, ref, watch } from "vue";
 import Chooser from "./components/Chooser.vue";
-import { features, hero } from "./data/features.js";
+import { features } from "./data/features.js";
+import { useViewerState } from "./composables/useViewerState.js";
+import { useViewerTransition } from "./composables/useViewerTransition.js";
 
-const activeFeature = ref(null);
-const activeVariant = ref(null);
-const videoEnded = ref(false);
-
-const currentItem = computed(() => activeFeature.value ?? hero);
-const viewerImage = computed(() => currentItem.value.imageStart);
-
-function onClose() {
-  activeFeature.value = null;
-  activeVariant.value = null;
-}
-
-function onSelect(feature) {
-  if (activeFeature.value?.id !== feature.id) {
-    activeVariant.value = feature.variants?.[0] ?? null;
-  }
-  activeFeature.value = feature;
-}
-
-function onSelectVariant(variant) {
-  activeVariant.value = variant;
-}
-
-function onVideoEnded() {
-  videoEnded.value = true;
-}
-
-// Reset video state and preload imageEnd whenever the active item changes
-watch(
+const {
+  activeFeature,
+  activeVariant,
+  videoEnded,
   currentItem,
-  (item) => {
-    videoEnded.value = false;
-    if (item.imageEnd) {
-      new Image().src = item.imageEnd;
-    }
-  },
-  { immediate: true },
-);
-
-const refViewer = ref(null);
-
-const SCALE_SMALL = 1440 / 1728; // ~0.833 — matches 1440×760 at native ratio
-
-function onBeforeEnter(el) {
-  const media = el.querySelector(".viewer__media");
-  gsap.set(el, { xPercent: 0 });
-  if (media) gsap.set(media, { scale: SCALE_SMALL, opacity: 0 });
-}
-
-function onEnter(el, done) {
-  el._enterDone = done;
-  const media = el.querySelector(".viewer__media");
-  gsap
-    .timeline({ onComplete: done })
-    .to(el, { xPercent: 0, duration: 1, ease: "expo.out" }, 0)
-    .to(media ?? el, { scale: 1, opacity: 1, duration: 1, ease: "expo.out" }, 0)
-    .set(el, { clearProps: "transform" })
-    .set(media ?? el, { clearProps: "transform,opacity" });
-}
-
-function onLeave(el, done) {
-  const media = el.querySelector(".viewer__media");
-  // Kill any in-flight enter animation and resolve it so Vue can clean up
-  gsap.killTweensOf([el, media]);
-  el._enterDone?.();
-  el._enterDone = null;
-  gsap
-    .timeline({ onComplete: done })
-    .to(el, { xPercent: -10, duration: 1, ease: "expo.out" }, 0)
-    .to(media ?? el, { opacity: 0, duration: 1, ease: "expo.out" }, 0);
-}
-
-onMounted(() => {
-  const allImages = [
-    hero.imageStart,
-    hero.imageEnd,
-    ...features.flatMap((f) =>
-      [
-        f.imageStart,
-        f.imageEnd,
-        ...(f.variants?.map((v) => v.image) ?? []),
-      ].filter(Boolean),
-    ),
-  ];
-  allImages.forEach((src) => {
-    new Image().src = src;
-  });
-
-  gsap.from(refViewer.value, {
-    autoAlpha: 0,
-    y: 40,
-    duration: 1,
-    ease: "expo.out",
-  });
-});
+  viewerImage,
+  onClose,
+  onSelect,
+  onSelectVariant,
+  onVideoEnded,
+} = useViewerState();
+const { refViewer, onBeforeEnter, onEnter, onLeave } = useViewerTransition();
 </script>
 
 <style scoped>

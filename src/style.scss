@@ -18,16 +18,11 @@ $viewer-bg: rgb(245, 245, 247);
 $chooser-item-bg: rgba(232, 232, 237, 0.72);
 
 $font-sans:
-  -apple-system,
-  BlinkMacSystemFont,
-  "SF Pro Text",
-  "SF Pro Display",
-  system-ui,
+  -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui,
   sans-serif;
 
 $radius: 12px;
 $transition: 0.3s ease;
-$breakpoint-md: 768px;
 
 // --- expose to CSS for use in scoped component styles ---
 :root {
@@ -74,7 +69,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   font-optical-sizing: auto;
-  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  font-feature-settings:
+    "kern" 1,
+    "liga" 1,
+    "calt" 1;
 }
 
 #app {

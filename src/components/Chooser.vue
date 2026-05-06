@@ -79,10 +79,8 @@ function onPrev() {
 }
 
 function onNext() {
-  const next = activeIndex.value < 0 ? 0 : activeIndex.value + 1;
-  if (next < props.features.length) {
-    emit("select", props.features[next]);
-  }
+  const next = activeIndex.value + 1;
+  emit("select", props.features[next]);
 }
 </script>
 
