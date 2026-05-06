@@ -20,6 +20,7 @@
               <img
                 v-if="currentItem.imageEnd"
                 :src="currentItem.imageEnd"
+                :alt="currentItem.label ?? 'MacBook Neo'"
                 class="viewer__video-end"
                 :class="{ 'viewer__video-end--visible': videoEnded }"
               />
@@ -29,13 +30,14 @@
                 v-for="v in currentItem.variants"
                 :key="v.name"
                 :src="v.image"
+                :alt="`${currentItem.label} in ${v.displayName}`"
                 class="viewer__variant-img"
                 :class="{
                   'viewer__variant-img--active': v.name === activeVariant?.name,
                 }"
               />
             </template>
-            <img v-else :src="viewerImage" />
+            <img v-else :src="viewerImage" :alt="currentItem.label ?? 'MacBook Neo'" />
           </div>
         </div>
       </Transition>
